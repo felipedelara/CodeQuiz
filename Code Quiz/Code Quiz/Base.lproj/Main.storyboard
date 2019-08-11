@@ -22,10 +22,10 @@
         </array>
     </customFonts>
     <scenes>
-        <!--View Controller-->
+        <!--Quiz View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Code_Quiz" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="QuizViewController" customModule="Code_Quiz" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -44,10 +44,10 @@
                                 </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" name="SFProDisplay-Semibold" family="SF Pro Display" pointSize="17"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="go" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="hhE-fA-Dme">
-                                <rect key="frame" x="0.0" y="223.5" width="414" height="508.5"/>
+                                <rect key="frame" x="0.0" y="223.5" width="414" height="672.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="53" id="cXP-nq-AWk">
@@ -75,7 +75,7 @@
                                 <sections/>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Qj-fZ-qEa">
-                                <rect key="frame" x="0.0" y="732" width="414" height="130"/>
+                                <rect key="frame" x="0.0" y="766" width="414" height="130"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="gie-hY-Yai">
                                         <rect key="frame" x="16" y="16" width="382" height="98"/>
@@ -130,21 +130,31 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GIW-3V-LS7" secondAttribute="trailing" constant="16" id="77k-eb-dFo"/>
-                            <constraint firstItem="1Qj-fZ-qEa" firstAttribute="top" secondItem="hhE-fA-Dme" secondAttribute="bottom" id="7um-gR-cRD"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1Qj-fZ-qEa" secondAttribute="trailing" id="CjE-dw-5cM"/>
                             <constraint firstItem="hhE-fA-Dme" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Eh7-T6-LBm"/>
                             <constraint firstAttribute="trailing" secondItem="qdC-t5-wRx" secondAttribute="trailing" constant="16" id="JPc-Xd-Gme"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="1Qj-fZ-qEa" secondAttribute="bottom" id="QDn-0Q-f44"/>
+                            <constraint firstAttribute="bottom" secondItem="1Qj-fZ-qEa" secondAttribute="bottom" id="QDn-0Q-f44"/>
                             <constraint firstItem="hhE-fA-Dme" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="S2Q-Kp-BXQ"/>
                             <constraint firstItem="qdC-t5-wRx" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="S7f-sX-otw"/>
                             <constraint firstItem="1Qj-fZ-qEa" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="TTd-mB-6Kv"/>
                             <constraint firstItem="GIW-3V-LS7" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="dpf-O9-GKT"/>
                             <constraint firstItem="hhE-fA-Dme" firstAttribute="top" secondItem="GIW-3V-LS7" secondAttribute="bottom" constant="16" id="hQa-VF-t1a"/>
                             <constraint firstItem="GIW-3V-LS7" firstAttribute="top" secondItem="qdC-t5-wRx" secondAttribute="bottom" constant="16" id="qyT-HU-fjU"/>
+                            <constraint firstAttribute="bottom" secondItem="hhE-fA-Dme" secondAttribute="bottom" id="tag-zP-CDo"/>
                             <constraint firstItem="qdC-t5-wRx" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="w7s-gg-sEI"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="lowerView" destination="1Qj-fZ-qEa" id="mwg-sw-gcZ"/>
+                        <outlet property="lowerViewBottomConstraint" destination="qIO-aM-5ZG" id="kcv-Sm-Tzs"/>
+                        <outlet property="startResetButton" destination="02o-Mx-3YD" id="7Ou-Hl-54p"/>
+                        <outlet property="timerLabel" destination="MJW-9s-swt" id="Tul-ZA-zQe"/>
+                        <outlet property="titleLabel" destination="qdC-t5-wRx" id="33k-vb-shn"/>
+                        <outlet property="wordCounterLabel" destination="W9D-KG-Add" id="qWN-Hg-E2S"/>
+                        <outlet property="wordTextField" destination="GIW-3V-LS7" id="cuc-Wf-wcU"/>
+                        <outlet property="wordsTableView" destination="hhE-fA-Dme" id="coQ-NT-AAb"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -153,7 +163,7 @@
     </scenes>
     <resources>
         <namedColor name="BackgroundColor">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="QuizMainOrange">
             <color red="1" green="0.51372549019607838" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
