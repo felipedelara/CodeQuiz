@@ -8,7 +8,7 @@
 
 import UIKit
 
-class QuizViewController: UIViewController {
+class QuizViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var wordTextField: UITextField!
@@ -16,19 +16,17 @@ class QuizViewController: UIViewController {
     @IBOutlet weak var wordCounterLabel: UILabel!
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var startResetButton: UIButton!
-    
     @IBOutlet weak var lowerViewBottomConstraint: NSLayoutConstraint!
-    
+
     @IBOutlet weak var lowerView: UIView!
     
     var lowerViewY : CGFloat? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         KeywordsService.request()
     
-        
+        self.wordTextField.delegate = self
         
     }
     
@@ -43,6 +41,12 @@ class QuizViewController: UIViewController {
         super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    //MARK: - Keyboard
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     @objc func keyboardWillShow(notification: Notification) {

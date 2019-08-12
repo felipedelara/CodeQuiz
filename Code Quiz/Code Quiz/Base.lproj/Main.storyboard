@@ -36,7 +36,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Insert Word" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="GIW-3V-LS7">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Insert Word" textAlignment="natural" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="GIW-3V-LS7">
                                 <rect key="frame" x="16" y="157.5" width="382" height="50"/>
                                 <color key="backgroundColor" red="0.92146831750869751" green="0.92162626981735229" blue="0.92145836353302002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -44,7 +44,7 @@
                                 </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" name="SFProDisplay-Semibold" family="SF Pro Display" pointSize="17"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="go" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="hhE-fA-Dme">
                                 <rect key="frame" x="0.0" y="223.5" width="414" height="672.5"/>
@@ -107,6 +107,11 @@
                                                 <state key="normal" title="Reset">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                        <integer key="value" value="5"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                </userDefinedRuntimeAttributes>
                                             </button>
                                         </subviews>
                                         <constraints>
@@ -133,7 +138,7 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1Qj-fZ-qEa" secondAttribute="trailing" id="CjE-dw-5cM"/>
                             <constraint firstItem="hhE-fA-Dme" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Eh7-T6-LBm"/>
                             <constraint firstAttribute="trailing" secondItem="qdC-t5-wRx" secondAttribute="trailing" constant="16" id="JPc-Xd-Gme"/>
-                            <constraint firstAttribute="bottom" secondItem="1Qj-fZ-qEa" secondAttribute="bottom" id="QDn-0Q-f44"/>
+                            <constraint firstAttribute="bottom" secondItem="1Qj-fZ-qEa" secondAttribute="bottom" priority="750" id="QDn-0Q-f44"/>
                             <constraint firstItem="hhE-fA-Dme" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="S2Q-Kp-BXQ"/>
                             <constraint firstItem="qdC-t5-wRx" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="S7f-sX-otw"/>
                             <constraint firstItem="1Qj-fZ-qEa" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="TTd-mB-6Kv"/>
@@ -147,7 +152,7 @@
                     </view>
                     <connections>
                         <outlet property="lowerView" destination="1Qj-fZ-qEa" id="mwg-sw-gcZ"/>
-                        <outlet property="lowerViewBottomConstraint" destination="qIO-aM-5ZG" id="kcv-Sm-Tzs"/>
+                        <outlet property="lowerViewBottomConstraint" destination="qIO-aM-5ZG" id="eZW-W0-ZFH"/>
                         <outlet property="startResetButton" destination="02o-Mx-3YD" id="7Ou-Hl-54p"/>
                         <outlet property="timerLabel" destination="MJW-9s-swt" id="Tul-ZA-zQe"/>
                         <outlet property="titleLabel" destination="qdC-t5-wRx" id="33k-vb-shn"/>
