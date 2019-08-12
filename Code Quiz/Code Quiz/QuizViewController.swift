@@ -26,6 +26,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     var timeCounter = 300
     var timer = Timer()
     
+    //MARK: - View events
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -54,7 +55,8 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         
         NotificationCenter.default.removeObserver(self)
     }
-
+    
+    //MARK: - Button
     @IBAction func actionButtonPressed(_ sender: Any) {
         buttonStateShouldChange()
     }
@@ -147,16 +149,13 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     }
 }
 
+//MARK: - Table
 extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
-    // MARK: - Table view data source
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
-     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return correctAnswers.count
     }
     
@@ -168,5 +167,4 @@ extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
         
         return cell
      }
-
 }
