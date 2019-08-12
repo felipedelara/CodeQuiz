@@ -20,10 +20,11 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var lowerView: UIView!
     
     var lowerViewY : CGFloat? = nil
-    
     var keywords : [String] = []
-    
     var correctAnswers = [String]()
+    var buttonState = ButtonState.start
+    var timeCounter = 300
+    var timer = Timer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +55,27 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.removeObserver(self)
     }
 
+    @IBAction func actionButtonPressed(_ sender: Any) {
+        buttonStateShouldChange()
+    }
+    
+    func buttonStateShouldChange(){
+        if buttonState == .start{
+            self.startTimer()
+            self.buttonState = .reset
+            self.startResetButton.setTitle("Reset", for: .normal)
+        }else if buttonState == .reset{
+            self.timer.invalidate()
+            self.timeCounter = 300
+            self.timerLabel.text = "05:00"
+            self.buttonState = .start
+            self.startResetButton.setTitle("Start", for: .normal)
+            self.correctAnswers = []
+            self.wordsTableView.reloadData()
+            self.wordTextField.text = ""
+        }
+    }
+    
     //MARK: - Textfield
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -61,6 +83,10 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
+        if self.buttonState == .start{
+            buttonStateShouldChange()
+        }
+        
         if let text = textField.text {
             for keyword in self.keywords{
                 if text == keyword.uppercased(){
@@ -73,6 +99,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
                     if !alreadyExists{
                         textField.text = ""
                         correctAnswers.append(text)
+                        self.wordCounterLabel.text = "\(correctAnswers.count)/\(keywords.count)"
                         self.wordsTableView.reloadData()
                     }
                 }
@@ -103,6 +130,21 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    //MARK: - Timer
+    func startTimer(){
+        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
+    }
+    
+    @objc func updateCounter() {
+        
+        let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: timeCounter)
+        if timeCounter > 0 {
+            self.timerLabel.text = "\(String(format: "%02d", min)):\(String(format: "%02d", sec))"
+            timeCounter -= 1
+        } else{
+            self.timer.invalidate()
+        }
+    }
 }
 
 extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
