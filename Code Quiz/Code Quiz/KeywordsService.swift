@@ -9,7 +9,7 @@
 import Foundation
 
 class KeywordsService{
-    static func request(){
+    static func request(completionHandler: @escaping ([String]) -> Void){
         let request = NSMutableURLRequest(url: NSURL(string: "https://codechallenge.arctouch.com/quiz/java-keywords")! as URL,
                                           cachePolicy: .useProtocolCachePolicy,
                                           timeoutInterval: 10.0)
@@ -26,6 +26,7 @@ class KeywordsService{
                 //Using fixed json response here
                 if let keywords = try? Keywords(correctedJsonResponse) {
                     print(keywords.question ?? "no question")
+                    completionHandler(keywords.answer!)
                 }else{
                     print("Failed on data to model conversion")
                 }
