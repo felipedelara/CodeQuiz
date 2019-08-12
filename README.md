@@ -2,6 +2,8 @@
 
 Quiz iOS app. More info soon.
 
+<img src="https://github.com/felipedelara/CodeQuiz/blob/development/Screenshot/1.png" width="250">
+
 ## Difficulties
 
 ### Invalid JSON
