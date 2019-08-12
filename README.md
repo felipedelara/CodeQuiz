@@ -1,6 +1,6 @@
 # CodeQuiz
 
-Quiz iOS app. More info soon.
+Quiz iOS app.
 
 <img src="https://github.com/felipedelara/CodeQuiz/blob/development/Screenshot/1.png" width="250">
 
