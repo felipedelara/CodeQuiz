@@ -9,7 +9,6 @@
 import UIKit
 
 class QuizViewController: UIViewController, UITextFieldDelegate {
-    
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var wordTextField: UITextField!
     @IBOutlet weak var wordsTableView: UITableView!
@@ -159,8 +158,10 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
             print("Notification: Keyboard will show")
             
             //Adjust height so view is not hidden by keyboard
-            lowerViewBottomConstraint.constant = keyboardHeight + 16
-            self.view.layoutIfNeeded()
+            if UIDevice.current.orientation == UIDeviceOrientation.portrait {
+                lowerViewBottomConstraint.constant = keyboardHeight + 16
+                self.view.layoutIfNeeded()
+            }
         }
     }
     
