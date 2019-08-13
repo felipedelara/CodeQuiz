@@ -31,13 +31,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.showLoadingView()
-        let onSuccess : ([String]) -> Void = { result in
-            self.keywords = result
-            self.stopLoadingView()
-        }
-        
-        KeywordsService.request(completionHandler: onSuccess)
+        requestData()
     
         self.wordTextField.delegate = self
         wordTextField.addTarget(self, action: #selector(QuizViewController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
@@ -59,14 +53,33 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.removeObserver(self)
     }
     
+    func requestData(){
+        self.showLoadingView()
+        let onCompletion : (Bool, String, [String]) -> Void = { success, question, answers in
+            DispatchQueue.main.async {
+                if success{
+                    self.keywords = answers
+                    self.titleLabel.text = question
+                }else{
+                    self.presentNetworkFailure()
+                }
+            }
+            self.stopLoadingView()
+        }
+        
+        KeywordsService.request(completionHandler: onCompletion)
+    }
+    
     //MARK: - Loading Indicator
     func showLoadingView(){
-        let _loadingView = Bundle.main.loadNibNamed("LoadingView", owner: self, options: nil)![0] as! LoadingView
-        self.view.addSubview(_loadingView)
-        self.view.bringSubviewToFront(_loadingView)
-        _loadingView.activityIndicator.startAnimating()
-        
-        self.loadingView = _loadingView
+        DispatchQueue.main.async {
+            let _loadingView = Bundle.main.loadNibNamed("LoadingView", owner: self, options: nil)![0] as! LoadingView
+            self.view.addSubview(_loadingView)
+            self.view.bringSubviewToFront(_loadingView)
+            _loadingView.activityIndicator.startAnimating()
+            
+            self.loadingView = _loadingView
+        }
     }
     
     @objc func stopLoadingView(){
@@ -92,6 +105,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
             self.timer.invalidate()
             self.timeCounter = 300
             self.timerLabel.text = "05:00"
+            self.wordCounterLabel.text = "0/50"
             self.buttonState = .start
             self.startResetButton.setTitle("Start", for: .normal)
             self.correctAnswers = []
@@ -176,6 +190,17 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: - Alerts
+    func presentNetworkFailure(){
+        let alertController = UIAlertController(title: "Error", message: "Could not retrieve data from server.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) {
+            UIAlertAction in
+            print("Try Again Networking Pressed")
+            self.requestData()
+        }
+        alertController.addAction(action)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     func presentVictory(){
         let alertController = UIAlertController(title: "Congratulations!", message: "Good job! You found all the answers on time. Keep up with the great work.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Play Again", style: UIAlertAction.Style.default) {
@@ -189,7 +214,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     
     func presentTimeFinished(){
         let alertController = UIAlertController(title: "Time finished", message: "Sorry, time is up! You got \(self.correctAnswers.count) out of \(self.keywords.count) answers.", preferredStyle: .alert)
-        let action = UIAlertAction(title: " Try Again", style: UIAlertAction.Style.default) {
+        let action = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) {
             UIAlertAction in
             print("Try Again Pressed")
             self.gameStateShouldChange()

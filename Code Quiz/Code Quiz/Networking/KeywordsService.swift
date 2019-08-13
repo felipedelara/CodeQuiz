@@ -9,7 +9,7 @@
 import Foundation
 
 class KeywordsService{
-    static func request(completionHandler: @escaping ([String]) -> Void){
+    static func request(completionHandler: @escaping (Bool, String, [String]) -> Void){
         let request = NSMutableURLRequest(url: NSURL(string: "https://codechallenge.arctouch.com/quiz/java-keywords")! as URL,
                                           cachePolicy: .useProtocolCachePolicy,
                                           timeoutInterval: 10.0)
@@ -22,14 +22,20 @@ class KeywordsService{
             } else {
                 let httpResponse = response as? HTTPURLResponse
                 print(httpResponse ?? "no response")
-                if let data = data {
-                    print(String(data: data, encoding: .utf8) ?? "")
-                    if let keywords = try? Keywords(data: data) {
-                        print(keywords.question ?? "no question")
-                        completionHandler(keywords.answer!)
-                    }else{
-                        print("Failed on data to model conversion")
+                guard let data = data else{
+                    completionHandler(false, "", [])
+                    return
+                }
+                print(String(data: data, encoding: .utf8) ?? "")
+                if let keywords = try? Keywords(data: data) {
+                    print(keywords.question ?? "no question")
+                    guard let question = keywords.question, let answers = keywords.answer else{
+                        completionHandler(false, "", [])
+                        return
                     }
+                    completionHandler(true, question, answers)
+                }else{
+                    print("Failed on data to model conversion")
                 }
             }
         })

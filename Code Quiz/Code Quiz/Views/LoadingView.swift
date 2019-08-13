@@ -9,9 +9,6 @@
 import UIKit
 
 class LoadingView: UIView {
-
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var textLabel: UILabel!
-
-    
+    @IBOutlet weak var textLabel: UILabel!   
 }
