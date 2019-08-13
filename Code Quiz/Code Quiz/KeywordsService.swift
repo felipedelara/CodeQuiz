@@ -22,13 +22,14 @@ class KeywordsService{
             } else {
                 let httpResponse = response as? HTTPURLResponse
                 print(httpResponse ?? "no response")
-                print(String(data: data!, encoding: .utf8) ?? "")
-                //Using fixed json response here
-                if let keywords = try? Keywords(correctedJsonResponse) {
-                    print(keywords.question ?? "no question")
-                    completionHandler(keywords.answer!)
-                }else{
-                    print("Failed on data to model conversion")
+                if let data = data {
+                    print(String(data: data, encoding: .utf8) ?? "")
+                    if let keywords = try? Keywords(data: data) {
+                        print(keywords.question ?? "no question")
+                        completionHandler(keywords.answer!)
+                    }else{
+                        print("Failed on data to model conversion")
+                    }
                 }
             }
         })

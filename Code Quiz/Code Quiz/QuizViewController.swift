@@ -19,6 +19,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var lowerViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var lowerView: UIView!
     
+    var loadingView : LoadingView?
     var lowerViewY : CGFloat? = nil
     var keywords : [String] = []
     var correctAnswers = [String]()
@@ -30,9 +31,12 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.showLoadingView()
         let onSuccess : ([String]) -> Void = { result in
             self.keywords = result
+            self.stopLoadingView()
         }
+        
         
         KeywordsService.request(completionHandler: onSuccess)
     
@@ -54,6 +58,27 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    //MARK: - Loading Indicator
+
+    func showLoadingView(){
+        
+        let _loadingView = Bundle.main.loadNibNamed("LoadingView", owner: self, options: nil)![0] as! LoadingView
+        self.view.addSubview(_loadingView)
+        self.view.bringSubviewToFront(_loadingView)
+        _loadingView.activityIndicator.startAnimating()
+        
+        self.loadingView = _loadingView
+    }
+    
+    @objc func stopLoadingView(){
+        DispatchQueue.main.async {
+            if let _loadingView = self.loadingView {
+                _loadingView.activityIndicator.stopAnimating()
+                _loadingView.removeFromSuperview()
+            }
+        }
     }
     
     //MARK: - Button
