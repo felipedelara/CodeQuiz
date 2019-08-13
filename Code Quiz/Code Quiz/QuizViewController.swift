@@ -24,10 +24,10 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     var keywords : [String] = []
     var correctAnswers = [String]()
     var buttonState = ButtonState.start
-    var timeCounter = 5
+    var timeCounter = 300
     var timer = Timer()
     
-    //MARK: - View events
+    //MARK: - View overrides
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -111,24 +111,28 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
             gameStateShouldChange()
         }
         
-        if let text = textField.text {
-            for keyword in self.keywords{
-                if text == keyword.uppercased(){
-                    var alreadyExists = false
-                    for answer in correctAnswers{
-                        if text == answer{
-                            alreadyExists = true
-                        }
+        guard let text = textField.text  else {
+            return
+        }
+    
+        for keyword in self.keywords{
+            if text == keyword.uppercased(){
+                var keyworkAlreadyExists = false
+                
+                for answer in correctAnswers{
+                    if text == answer{
+                        keyworkAlreadyExists = true
                     }
-                    if !alreadyExists{
-                        textField.text = ""
-                        correctAnswers.append(text)
-                        self.wordCounterLabel.text = "\(correctAnswers.count)/\(keywords.count)"
-                        self.wordsTableView.reloadData()
-                        
-                        if self.keywords.count == self.correctAnswers.count{
-                            self.presentVictory()
-                        }
+                }
+                
+                if !keyworkAlreadyExists{
+                    textField.text = ""
+                    correctAnswers.append(text)
+                    self.wordCounterLabel.text = "\(correctAnswers.count)/\(keywords.count)"
+                    self.wordsTableView.reloadData()
+                    
+                    if self.keywords.count == self.correctAnswers.count{
+                        self.presentVictory()
                     }
                 }
             }
@@ -140,22 +144,17 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             print("Notification: Keyboard will show")
             
-            if lowerViewY == nil{
-                lowerViewY = lowerView.frame.origin.y
-                lowerView.frame.origin.y -= keyboardHeight
-                lowerView.layoutIfNeeded()
-            }
+            //Adjust height so view is not hidden by keyboard
+            lowerViewBottomConstraint.constant = keyboardHeight + 16
+            self.view.layoutIfNeeded()
         }
     }
     
     @objc func keyboardWillHide(notification: Notification) {
         print("Notification: Keyboard will hide")
 
-        if let y = lowerViewY{
-            lowerView.frame.origin.y = y
-            lowerView.layoutIfNeeded()
-            lowerViewY = nil
-        }
+        //Put view back in its original place
+        lowerViewBottomConstraint.constant = 16
     }
     
     //MARK: - Timer
@@ -164,12 +163,13 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func updateCounter() {
-        
         let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: timeCounter)
         if timeCounter > 0 {
+            //Timer still valid
             self.timerLabel.text = "\(String(format: "%02d", min)):\(String(format: "%02d", sec))"
             timeCounter -= 1
         } else{
+            //Game over
             self.timer.invalidate()
             self.presentTimeFinished()
         }
@@ -177,44 +177,29 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - Alerts
     func presentVictory(){
-        // Create the alert controller
         let alertController = UIAlertController(title: "Congratulations!", message: "Good job! You found all the answers on time. Keep up with the great work.", preferredStyle: .alert)
-        
-        // Create the actions
         let action = UIAlertAction(title: "Play Again", style: UIAlertAction.Style.default) {
             UIAlertAction in
             print("Play Again Pressed")
             self.gameStateShouldChange()
         }
-        
-        // Add the actions
         alertController.addAction(action)
-        
-        // Present the controller
         self.present(alertController, animated: true, completion: nil)
     }
     
     func presentTimeFinished(){
-        // Create the alert controller
         let alertController = UIAlertController(title: "Time finished", message: "Sorry, time is up! You got \(self.correctAnswers.count) out of \(self.keywords.count) answers.", preferredStyle: .alert)
-        
-        // Create the actions
         let action = UIAlertAction(title: " Try Again", style: UIAlertAction.Style.default) {
             UIAlertAction in
             print("Try Again Pressed")
             self.gameStateShouldChange()
         }
-        
-        // Add the actions
         alertController.addAction(action)
-        
-        // Present the controller
         self.present(alertController, animated: true, completion: nil)
     }
-    
 }
 
-//MARK: - Table
+//MARK: - TableView
 extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -224,7 +209,7 @@ extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
         return correctAnswers.count
     }
     
-     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "keywordCell", for: indexPath) as? KeywordTableViewCell else{
             return UITableViewCell()
         }
