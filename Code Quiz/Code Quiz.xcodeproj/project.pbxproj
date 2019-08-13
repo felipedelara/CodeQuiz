@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		55BB0C0623022B9F005EAD04 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BB0C0423022B9F005EAD04 /* LoadingView.swift */; };
-		55BB0C0723022B9F005EAD04 /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55BB0C0523022B9F005EAD04 /* LoadingView.xib */; };
 		55C019CC2302288200D37B58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55C019CB2302288200D37B58 /* Assets.xcassets */; };
 		E484DE632300C5390050E15B /* QuizViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E484DE622300C5390050E15B /* QuizViewController.swift */; };
 		E484DE652300F2390050E15B /* KeywordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E484DE642300F2390050E15B /* KeywordTableViewCell.swift */; };
@@ -67,8 +65,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		55BB0C0423022B9F005EAD04 /* LoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
-		55BB0C0523022B9F005EAD04 /* LoadingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
 		55C019CB2302288200D37B58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E484DE622300C5390050E15B /* QuizViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizViewController.swift; sourceTree = "<group>"; };
 		E484DE642300F2390050E15B /* KeywordTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeywordTableViewCell.swift; sourceTree = "<group>"; };
@@ -142,8 +138,6 @@
 		55BB0C08230246B1005EAD04 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				55BB0C0423022B9F005EAD04 /* LoadingView.swift */,
-				55BB0C0523022B9F005EAD04 /* LoadingView.xib */,
 				E484DE642300F2390050E15B /* KeywordTableViewCell.swift */,
 				E4BCDE2922FF81500094ACBC /* Main.storyboard */,
 			);
@@ -358,7 +352,6 @@
 				E4BCDE942300A44C0094ACBC /* SF-Pro-Text-Black.otf in Resources */,
 				E4BCDE702300A44C0094ACBC /* SF-Pro-Display-SemiboldItalic.otf in Resources */,
 				E4BCDE752300A44C0094ACBC /* SF-Pro-Text-BlackItalic.otf in Resources */,
-				55BB0C0723022B9F005EAD04 /* LoadingView.xib in Resources */,
 				E4BCDE902300A44C0094ACBC /* SF-Pro-Display-Heavy.otf in Resources */,
 				E4BCDE8F2300A44C0094ACBC /* SF-Pro-Display-Light.otf in Resources */,
 				E4BCDE852300A44C0094ACBC /* SF-Pro-Display-Bold.otf in Resources */,
@@ -390,7 +383,6 @@
 				E484DE652300F2390050E15B /* KeywordTableViewCell.swift in Sources */,
 				E484DE632300C5390050E15B /* QuizViewController.swift in Sources */,
 				E4BCDE3A22FF88370094ACBC /* Keywords.swift in Sources */,
-				55BB0C0623022B9F005EAD04 /* LoadingView.swift in Sources */,
 				E4BCDE2622FF81500094ACBC /* AppDelegate.swift in Sources */,
 				E484DE692300F5340050E15B /* ButtonState.swift in Sources */,
 			);

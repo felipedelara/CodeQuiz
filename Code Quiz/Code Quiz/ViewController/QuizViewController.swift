@@ -17,8 +17,9 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var startResetButton: UIButton!
     @IBOutlet weak var lowerViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var lowerView: UIView!
+    @IBOutlet weak var loadingView: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var loadingView : LoadingView?
     var lowerViewY : CGFloat? = nil
     var keywords : [String] = []
     var correctAnswers = [String]()
@@ -65,28 +66,21 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
             }
             self.stopLoadingView()
         }
-        
         KeywordsService.request(completionHandler: onCompletion)
     }
     
     //MARK: - Loading Indicator
     func showLoadingView(){
         DispatchQueue.main.async {
-            let _loadingView = Bundle.main.loadNibNamed("LoadingView", owner: self, options: nil)![0] as! LoadingView
-            self.view.addSubview(_loadingView)
-            self.view.bringSubviewToFront(_loadingView)
-            _loadingView.activityIndicator.startAnimating()
-            
-            self.loadingView = _loadingView
+            self.loadingView.isHidden = false
+            self.activityIndicator.startAnimating()
         }
     }
     
     @objc func stopLoadingView(){
         DispatchQueue.main.async {
-            if let _loadingView = self.loadingView {
-                _loadingView.activityIndicator.stopAnimating()
-                _loadingView.removeFromSuperview()
-            }
+            self.loadingView.isHidden = true
+            self.activityIndicator.stopAnimating()
         }
     }
     
