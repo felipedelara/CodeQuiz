@@ -24,7 +24,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     var keywords : [String] = []
     var correctAnswers = [String]()
     var buttonState = ButtonState.start
-    var timeCounter = 300
+    var timeCounter = 5
     var timer = Timer()
     
     //MARK: - View events
@@ -36,7 +36,6 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
             self.keywords = result
             self.stopLoadingView()
         }
-        
         
         KeywordsService.request(completionHandler: onSuccess)
     
@@ -61,9 +60,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: - Loading Indicator
-
     func showLoadingView(){
-        
         let _loadingView = Bundle.main.loadNibNamed("LoadingView", owner: self, options: nil)![0] as! LoadingView
         self.view.addSubview(_loadingView)
         self.view.bringSubviewToFront(_loadingView)
@@ -83,10 +80,10 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - Button
     @IBAction func actionButtonPressed(_ sender: Any) {
-        buttonStateShouldChange()
+        gameStateShouldChange()
     }
     
-    func buttonStateShouldChange(){
+    func gameStateShouldChange(){
         if buttonState == .start{
             self.startTimer()
             self.buttonState = .reset
@@ -111,7 +108,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     
     @objc func textFieldDidChange(_ textField: UITextField) {
         if self.buttonState == .start{
-            buttonStateShouldChange()
+            gameStateShouldChange()
         }
         
         if let text = textField.text {
@@ -128,6 +125,10 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
                         correctAnswers.append(text)
                         self.wordCounterLabel.text = "\(correctAnswers.count)/\(keywords.count)"
                         self.wordsTableView.reloadData()
+                        
+                        if self.keywords.count == self.correctAnswers.count{
+                            self.presentVictory()
+                        }
                     }
                 }
             }
@@ -170,8 +171,47 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
             timeCounter -= 1
         } else{
             self.timer.invalidate()
+            self.presentTimeFinished()
         }
     }
+    
+    //MARK: - Alerts
+    func presentVictory(){
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Congratulations!", message: "Good job! You found all the answers on time. Keep up with the great work.", preferredStyle: .alert)
+        
+        // Create the actions
+        let action = UIAlertAction(title: "Play Again", style: UIAlertAction.Style.default) {
+            UIAlertAction in
+            print("Play Again Pressed")
+            self.gameStateShouldChange()
+        }
+        
+        // Add the actions
+        alertController.addAction(action)
+        
+        // Present the controller
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func presentTimeFinished(){
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Time finished", message: "Sorry, time is up! You got \(self.correctAnswers.count) out of \(self.keywords.count) answers.", preferredStyle: .alert)
+        
+        // Create the actions
+        let action = UIAlertAction(title: " Try Again", style: UIAlertAction.Style.default) {
+            UIAlertAction in
+            print("Try Again Pressed")
+            self.gameStateShouldChange()
+        }
+        
+        // Add the actions
+        alertController.addAction(action)
+        
+        // Present the controller
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
 }
 
 //MARK: - Table
