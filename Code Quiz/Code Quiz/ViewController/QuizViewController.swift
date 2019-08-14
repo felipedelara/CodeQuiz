@@ -27,6 +27,9 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     var timeCounter = 300
     var timer = Timer()
     
+    weak var keyboardWillShowObserver : NSObjectProtocol?
+    weak var keyboardWillHideObserver : NSObjectProtocol?
+    
     //MARK: - View overrides
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +37,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         requestData()
     
         self.wordTextField.delegate = self
-        wordTextField.addTarget(self, action: #selector(QuizViewController.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
+        wordTextField.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
 
         self.wordsTableView.delegate = self
         self.wordsTableView.dataSource = self
@@ -43,44 +46,48 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(QuizViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(QuizViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        keyboardWillShowObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: OperationQueue.main, using: self.keyboardWillShow(notification:))
+        keyboardWillHideObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: OperationQueue.main, using: self.keyboardWillHide(notification:))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self)
+        if let keyboardWillShowObserver = keyboardWillShowObserver, let keyboardWillHideObserver = keyboardWillHideObserver{
+            NotificationCenter.default.removeObserver(keyboardWillShowObserver)
+            NotificationCenter.default.removeObserver(keyboardWillHideObserver)
+        }
     }
     
     func requestData(){
         self.showLoadingView()
-        let onCompletion : (Bool, String, [String]) -> Void = { success, question, answers in
+        
+        let onCompletion : (Bool, String, [String]) -> Void = { [unowned vc = self] success, question, answers in
             DispatchQueue.main.async {
                 if success{
-                    self.keywords = answers
-                    self.titleLabel.text = question
+                    vc.keywords = answers
+                    vc.titleLabel.text = question
                 }else{
-                    self.presentNetworkFailure()
+                    vc.presentNetworkFailure()
                 }
             }
-            self.stopLoadingView()
+            vc.stopLoadingView()
         }
         KeywordsService.request(completionHandler: onCompletion)
     }
     
     //MARK: - Loading Indicator
     func showLoadingView(){
-        DispatchQueue.main.async {
-            self.loadingView.isHidden = false
-            self.activityIndicator.startAnimating()
+        DispatchQueue.main.async { [unowned vc = self] in
+            vc.loadingView.isHidden = false
+            vc.activityIndicator.startAnimating()
         }
     }
     
     @objc func stopLoadingView(){
-        DispatchQueue.main.async {
-            self.loadingView.isHidden = true
-            self.activityIndicator.stopAnimating()
+        DispatchQueue.main.async { [unowned vc = self] in
+            vc.loadingView.isHidden = true
+            vc.activityIndicator.stopAnimating()
         }
     }
     
@@ -147,7 +154,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: - Keyboard
-    @objc func keyboardWillShow(notification: Notification) {
+    func keyboardWillShow(notification: Notification) {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             print("Notification: Keyboard will show")
             
@@ -159,7 +166,7 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    @objc func keyboardWillHide(notification: Notification) {
+    func keyboardWillHide(notification: Notification) {
         print("Notification: Keyboard will hide")
 
         //Put view back in its original place
@@ -187,10 +194,9 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     //MARK: - Alerts
     func presentNetworkFailure(){
         let alertController = UIAlertController(title: "Error", message: "Could not retrieve data from server.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) {
-            UIAlertAction in
+        let action = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) { [unowned vc = self] UIAlertAction in
             print("Try Again Networking Pressed")
-            self.requestData()
+            vc.requestData()
         }
         alertController.addAction(action)
         self.present(alertController, animated: true, completion: nil)
@@ -198,10 +204,9 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     
     func presentVictory(){
         let alertController = UIAlertController(title: "Congratulations!", message: "Good job! You found all the answers on time. Keep up with the great work.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Play Again", style: UIAlertAction.Style.default) {
-            UIAlertAction in
+        let action = UIAlertAction(title: "Play Again", style: UIAlertAction.Style.default) {  [unowned vc = self] UIAlertAction in
             print("Play Again Pressed")
-            self.gameStateShouldChange()
+            vc.gameStateShouldChange()
         }
         alertController.addAction(action)
         self.present(alertController, animated: true, completion: nil)
@@ -209,10 +214,9 @@ class QuizViewController: UIViewController, UITextFieldDelegate {
     
     func presentTimeFinished(){
         let alertController = UIAlertController(title: "Time finished", message: "Sorry, time is up! You got \(self.correctAnswers.count) out of \(self.keywords.count) answers.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) {
-            UIAlertAction in
+        let action = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) { [unowned vc = self] UIAlertAction in
             print("Try Again Pressed")
-            self.gameStateShouldChange()
+            vc.gameStateShouldChange()
         }
         alertController.addAction(action)
         self.present(alertController, animated: true, completion: nil)
