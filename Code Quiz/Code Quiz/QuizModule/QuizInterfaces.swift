@@ -20,7 +20,12 @@ protocol QuizViewInterface: ViewInterface {
     //Presenter to View
     func showLoading()
     func hideLoading()
-    func reloadView(toFitState state: GameState)
+    func showVictory()
+    
+    func setTable(tableData: [String])
+    func setCounter(time: String)
+    func setScore(score: String)
+    
     func setupInitialView()
 }
 
@@ -29,6 +34,7 @@ protocol QuizPresenterInterface: PresenterInterface {
     func notifyViewDidLoad()
     func notifyViewDidAppear()
     func keyworkdsTextViewDidChange(text: String)
+    func mainButtonPressed()
     
     // Interactor to presenter
     func keywordsFetchSuccess(keywords: Keywords)

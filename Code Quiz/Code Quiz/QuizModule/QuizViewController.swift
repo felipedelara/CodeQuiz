@@ -60,6 +60,9 @@ final class QuizViewController: UIViewController {
         self.presenter.notifyViewDidAppear()
     }
     
+    @IBAction func mainButtonPressed(_ sender: Any) {
+        self.presenter.mainButtonPressed()
+    }
     //MARK: - Keyboard
     func keyboardWillShow(notification: Notification) {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
@@ -84,6 +87,23 @@ final class QuizViewController: UIViewController {
 // MARK: - Extensions -
 
 extension QuizViewController: QuizViewInterface {
+    func showVictory() {
+        //present alert
+    }
+    
+    func setTable(tableData: [String]) {
+        self.keywords = tableData
+        self.wordsTableView.reloadData()
+    }
+    
+    func setCounter(time: String) {
+        self.timerLabel.text = time
+    }
+    
+    func setScore(score: String) {
+        self.wordCounterLabel.text = score
+    }
+    
     func showLoading() {
         DispatchQueue.main.async { [unowned self] in
             self.loadingView.isHidden = false
@@ -98,12 +118,12 @@ extension QuizViewController: QuizViewInterface {
         }
     }
     
-    func reloadView(toFitState state: GameState) {
+    func updateGame(toFitState state: GameState) {
         switch state{
-        case .started:
-            self.startResetButton.setTitle("Reset", for: .normal)
-        default:
+        case .initial:
             self.startResetButton.setTitle("Start", for: .normal)
+        default:
+            self.startResetButton.setTitle("Reset", for: .normal)
         }
     }
     
@@ -120,7 +140,7 @@ extension QuizViewController: QuizViewInterface {
 extension QuizViewController : UITextFieldDelegate{
     @objc func textFieldDidChange(_ textField: UITextField) {
         if self.buttonState == .start{
-            reloadView(toFitState: GameState.started)
+            updateGame(toFitState: GameState.ongoing)
         }
         
         guard let text = textField.text  else {
@@ -159,15 +179,4 @@ class QuizViewModel{
     var timerCount: String?
     var mainButtonText: String?
     var isShowingActivityIndicator: Bool?
-    
-//    @IBOutlet weak var titleLabel: UILabel!
-//    @IBOutlet weak var wordTextField: UITextField!
-//    @IBOutlet weak var wordsTableView: UITableView!
-//    @IBOutlet weak var wordCounterLabel: UILabel!
-//    @IBOutlet weak var timerLabel: UILabel!
-//    @IBOutlet weak var startResetButton: UIButton!
-//    @IBOutlet weak var lowerViewBottomConstraint: NSLayoutConstraint!
-//    @IBOutlet weak var lowerView: UIView!
-//    @IBOutlet weak var loadingView: UIView!
-//    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 }

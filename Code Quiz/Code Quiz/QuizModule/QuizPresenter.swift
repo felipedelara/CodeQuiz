@@ -22,6 +22,9 @@ final class QuizPresenter {
     var keywords : [String] = []
     var correctAnswers = [String]()
 
+    var gameState = GameState.initial
+    var timeCounter = 300
+    var timer = Timer()
     
     // MARK: - Lifecycle -
 
@@ -35,6 +38,8 @@ final class QuizPresenter {
 // MARK: - Extensions -
 
 extension QuizPresenter: QuizPresenterInterface {
+
+    
     func notifyViewDidLoad() {
         print("Presenters is aware that view finished loaded")
         view.setupInitialView()
@@ -51,6 +56,19 @@ extension QuizPresenter: QuizPresenterInterface {
         print("Presenters is aware that view finished appearing")
     }
     
+    func mainButtonPressed() {
+        switch self.gameState {
+        case .initial:
+            self.gameState = .ongoing
+            precondition(self.correctAnswers.isEmpty)
+            self.startTimer()
+        default:
+            //handle
+            self.view.setTable(tableData: [])
+            
+        }
+    }
+    
     func keyworkdsTextViewDidChange(text: String) {
         for keyword in self.keywords{
             if text == keyword.uppercased(){
@@ -63,18 +81,24 @@ extension QuizPresenter: QuizPresenterInterface {
                 }
                 
                 if !keyworkAlreadyExists{
-                    view.reloadView(toFitState: .gotKeywordRight)
-                    //todo update viewmodel
-//                    self.view.text textField.text = ""
-//                    correctAnswers.append(text)
-//                    self.wordCounterLabel.text = "\(correctAnswers.count)/\(keywords.count)"
-//                    self.wordsTableView.reloadData()
-//
-//                    if self.keywords.count == self.correctAnswers.count{
-//                        self.presentVictory()
-//                    }
+                    handleGotKeywordRight(keyword)
                 }
             }
+        }
+    }
+    
+    func handleGotKeywordRight(_ keyword: String) {
+        self.correctAnswers.append(keyword)
+        view.setScore(score: "\(correctAnswers.count)/\(keywords.count)")
+        view.setTable(tableData: correctAnswers)
+        self.checkVictory()
+    }
+    
+    func checkVictory(){
+        if self.keywords.count == self.correctAnswers.count{
+            view.showVictory()
+            self.timer.invalidate()
+            self.gameState = .victory
         }
     }
     
@@ -88,7 +112,24 @@ extension QuizPresenter: QuizPresenterInterface {
         //todo update viewmodel
         print("Presenters failed getting keywords from interactor")
 //        view.hideLoading()
-
+    }
+ 
+    //MARK: - Timer
+    func startTimer(){
+        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
     }
     
+    @objc func updateCounter() {
+        let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: timeCounter)
+        if timeCounter > 0 {
+            //Timer still valid
+            
+            timeCounter -= 1
+            self.view.setCounter(time: "\(String(format: "%02d", min)):\(String(format: "%02d", sec))")
+        } else{
+            //Game over
+            self.timer.invalidate()
+            self.gameState = .defeat
+        }
+    }
 }

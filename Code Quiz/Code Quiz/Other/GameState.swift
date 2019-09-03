@@ -9,9 +9,8 @@
 import Foundation
 
 enum GameState{
-    case started
-    case gotKeywordRight
-    case finished
-    case reset
-    
+    case initial
+    case ongoing
+    case victory
+    case defeat
 }
