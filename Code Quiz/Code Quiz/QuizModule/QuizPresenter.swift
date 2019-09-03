@@ -14,34 +14,31 @@ final class QuizPresenter {
 
     // MARK: - Private properties -
 
+    //VIPER
     private unowned let view: QuizViewInterface
     private let interactor: QuizInteractorInterface
     private let wireframe: QuizWireframeInterface
 
-    
-    var keywords : [String] = []
-    
-    var correctAnswers = [String](){
+    //Logic related
+    private var keywords : [String] = []
+    private var correctAnswers = [String](){
         willSet {
             view.setScore(score: "\(newValue.count)/\(keywords.count)")
             view.setTable(tableData: newValue)
         }
     }
-
-    var gameState = GameState.initial {
+    private var gameState = GameState.initial {
         willSet {
             self.view.updateGame(toFitState: newValue)
         }
     }
-    
-    var timeCounter = 3 {
+    private var timeCounter = 3 {
         willSet {
             let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: newValue)
             self.view.setCounter(time: "\(String(format: "%02d", min)):\(String(format: "%02d", sec))")
         }
     }
-    
-    var timer = Timer()
+    private var timer = Timer()
     
     // MARK: - Lifecycle -
 
@@ -55,8 +52,6 @@ final class QuizPresenter {
 // MARK: - Extensions -
 
 extension QuizPresenter: QuizPresenterInterface {
-
-    
     func notifyViewDidLoad() {
         print("Presenters is aware that view finished loaded")
         view.setupInitialView()
@@ -133,15 +128,14 @@ extension QuizPresenter: QuizPresenterInterface {
     }
     
     func keywordsFetchSuccess(keywords: Keywords) {
-        //todo update viewmodel
+        //TODO update viewmodel
         print("Presenters got keywords from interactor")
         view.hideLoading()
     }
     
     func keywordsFetchFailed(with errorMessage: String) {
-        //todo update viewmodel
+        //TODO update viewmodel
         print("Presenters failed getting keywords from interactor")
-//        view.hideLoading()
     }
  
     //MARK: - Timer

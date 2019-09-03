@@ -67,7 +67,6 @@ final class QuizViewController: UIViewController {
     func keyboardWillShow(notification: Notification) {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             print("Notification: Keyboard will show")
-            
             //Adjust height so view is not hidden by keyboard
             if UIDevice.current.orientation == UIDeviceOrientation.portrait {
                 lowerViewBottomConstraint.constant = keyboardHeight + 16
@@ -78,7 +77,6 @@ final class QuizViewController: UIViewController {
     
     func keyboardWillHide(notification: Notification) {
         print("Notification: Keyboard will hide")
-        
         //Put view back in its original place
         lowerViewBottomConstraint.constant = 16
     }
