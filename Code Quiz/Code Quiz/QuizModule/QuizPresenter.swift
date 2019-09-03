@@ -20,10 +20,27 @@ final class QuizPresenter {
 
     
     var keywords : [String] = []
-    var correctAnswers = [String]()
+    
+    var correctAnswers = [String](){
+        willSet {
+            view.setScore(score: "\(newValue.count)/\(keywords.count)")
+            view.setTable(tableData: newValue)
+        }
+    }
 
-    var gameState = GameState.initial
-    var timeCounter = 300
+    var gameState = GameState.initial {
+        willSet {
+            self.view.updateGame(toFitState: newValue)
+        }
+    }
+    
+    var timeCounter = 3 {
+        willSet {
+            let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: newValue)
+            self.view.setCounter(time: "\(String(format: "%02d", min)):\(String(format: "%02d", sec))")
+        }
+    }
+    
     var timer = Timer()
     
     // MARK: - Lifecycle -
@@ -47,7 +64,13 @@ extension QuizPresenter: QuizPresenterInterface {
         view.showLoading()
         interactor.fetchCorrectKeywords(){ [weak self] success, keywords in
             self?.view.hideLoading()
-            self?.keywords = keywords?.answer ?? []
+            
+            guard let answers = keywords?.answer, let question = keywords?.question else{
+                //error
+                return
+            }
+            self?.keywords = answers
+            self?.view.setTitle(text: question)
             //update interface
         }
     }
@@ -64,14 +87,21 @@ extension QuizPresenter: QuizPresenterInterface {
             self.startTimer()
         default:
             //handle
-            self.view.setTable(tableData: [])
-            
+            self.timer.invalidate()
+            self.timeCounter = 300
+            self.correctAnswers.removeAll()
+            self.gameState = .initial
         }
     }
     
     func keyworkdsTextViewDidChange(text: String) {
+        if self.gameState != .ongoing{
+            self.gameState = .ongoing
+            self.startTimer()
+        }
+        
         for keyword in self.keywords{
-            if text == keyword.uppercased(){
+            if text.uppercased() == keyword.uppercased(){
                 var keyworkAlreadyExists = false
                 
                 for answer in correctAnswers{
@@ -88,9 +118,9 @@ extension QuizPresenter: QuizPresenterInterface {
     }
     
     func handleGotKeywordRight(_ keyword: String) {
-        self.correctAnswers.append(keyword)
+        self.correctAnswers.append(keyword.uppercased())
         view.setScore(score: "\(correctAnswers.count)/\(keywords.count)")
-        view.setTable(tableData: correctAnswers)
+        view.clearTextField()
         self.checkVictory()
     }
     
@@ -120,12 +150,9 @@ extension QuizPresenter: QuizPresenterInterface {
     }
     
     @objc func updateCounter() {
-        let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: timeCounter)
         if timeCounter > 0 {
             //Timer still valid
-            
             timeCounter -= 1
-            self.view.setCounter(time: "\(String(format: "%02d", min)):\(String(format: "%02d", sec))")
         } else{
             //Game over
             self.timer.invalidate()

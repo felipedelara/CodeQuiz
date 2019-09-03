@@ -22,10 +22,12 @@ protocol QuizViewInterface: ViewInterface {
     func hideLoading()
     func showVictory()
     
+    func updateGame(toFitState state: GameState)
+    func setTitle(text: String)
     func setTable(tableData: [String])
     func setCounter(time: String)
     func setScore(score: String)
-    
+    func clearTextField()
     func setupInitialView()
 }
 

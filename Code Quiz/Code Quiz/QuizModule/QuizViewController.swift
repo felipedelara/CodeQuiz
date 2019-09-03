@@ -27,7 +27,6 @@ final class QuizViewController: UIViewController {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var lowerViewY : CGFloat? = nil
-    var keywords : [String] = []
     var correctAnswers = [String]()
     var buttonState = ButtonState.start
     var timeCounter = 300
@@ -63,6 +62,7 @@ final class QuizViewController: UIViewController {
     @IBAction func mainButtonPressed(_ sender: Any) {
         self.presenter.mainButtonPressed()
     }
+    
     //MARK: - Keyboard
     func keyboardWillShow(notification: Notification) {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
@@ -87,21 +87,40 @@ final class QuizViewController: UIViewController {
 // MARK: - Extensions -
 
 extension QuizViewController: QuizViewInterface {
+    func clearTextField() {
+        DispatchQueue.main.async {
+            self.wordTextField.text = ""
+        }
+    }
+    
+    func setTitle(text: String) {
+        DispatchQueue.main.async {
+            self.titleLabel.text = text
+        }
+    }
+    
     func showVictory() {
         //present alert
+        DispatchQueue.main.async {}
     }
     
     func setTable(tableData: [String]) {
-        self.keywords = tableData
-        self.wordsTableView.reloadData()
+        DispatchQueue.main.async {
+            self.correctAnswers = tableData
+            self.wordsTableView.reloadData()
+        }
     }
     
     func setCounter(time: String) {
-        self.timerLabel.text = time
+        DispatchQueue.main.async {
+            self.timerLabel.text = time
+        }
     }
     
     func setScore(score: String) {
-        self.wordCounterLabel.text = score
+        DispatchQueue.main.async {
+            self.wordCounterLabel.text = score
+        }
     }
     
     func showLoading() {
@@ -139,10 +158,6 @@ extension QuizViewController: QuizViewInterface {
 //MARK: - TextFieldDelegate
 extension QuizViewController : UITextFieldDelegate{
     @objc func textFieldDidChange(_ textField: UITextField) {
-        if self.buttonState == .start{
-            updateGame(toFitState: GameState.ongoing)
-        }
-        
         guard let text = textField.text  else {
             return
         }
