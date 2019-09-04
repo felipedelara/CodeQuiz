@@ -13,8 +13,8 @@ import UIKit
 final class QuizViewController: UIViewController {
 
     // MARK: - Public properties -
-    var presenter: QuizPresenterInterface!
     
+    var presenter: QuizPresenterInterface!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var wordTextField: UITextField!
     @IBOutlet weak var wordsTableView: UITableView!
@@ -25,37 +25,28 @@ final class QuizViewController: UIViewController {
     @IBOutlet weak var lowerView: UIView!
     @IBOutlet weak var loadingView: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
     var lowerViewY : CGFloat? = nil
     var correctAnswers = [String]()
     var buttonState = ButtonState.start
     var timeCounter = 300
     var timer = Timer()
-    
     weak var keyboardWillShowObserver : NSObjectProtocol?
     weak var keyboardWillHideObserver : NSObjectProtocol?
     
-    
     // MARK: - Lifecycle -
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.wordsTableView.delegate = self
         self.wordsTableView.dataSource = self
-        
         self.wordTextField.delegate = self
         wordTextField.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
-    
         self.presenter.notifyViewDidLoad()
     }
 	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         keyboardWillShowObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: OperationQueue.main, using: self.keyboardWillShow(notification:))
         keyboardWillHideObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: OperationQueue.main, using: self.keyboardWillHide(notification:))
-        
         self.presenter.notifyViewDidAppear()
     }
     
@@ -64,6 +55,7 @@ final class QuizViewController: UIViewController {
     }
     
     //MARK: - Keyboard
+    
     func keyboardWillShow(notification: Notification) {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             print("Notification: Keyboard will show")
@@ -79,6 +71,19 @@ final class QuizViewController: UIViewController {
         print("Notification: Keyboard will hide")
         //Put view back in its original place
         lowerViewBottomConstraint.constant = 16
+    }
+    
+    //MARK: - Alerts
+    
+    func presentAlert(title: String, message: String, actionTitle: String, actionClosure: @escaping (() -> Void)){
+        DispatchQueue.main.async {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            let action = UIAlertAction(title: actionTitle, style: UIAlertAction.Style.default) { UIAlertAction in
+                actionClosure()
+            }
+            alertController.addAction(action)
+            self.present(alertController, animated: true, completion: nil)
+            }
     }
 }
 
@@ -154,6 +159,7 @@ extension QuizViewController: QuizViewInterface {
     
 }
 //MARK: - TextFieldDelegate
+
 extension QuizViewController : UITextFieldDelegate{
     @objc func textFieldDidChange(_ textField: UITextField) {
         guard let text = textField.text  else {
@@ -164,6 +170,7 @@ extension QuizViewController : UITextFieldDelegate{
 }
 
 //MARK: - TableView
+
 extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -181,15 +188,4 @@ extension QuizViewController : UITableViewDelegate, UITableViewDataSource{
         
         return cell
     }
-}
-
-
-class QuizViewModel{
-    var viewTitle : String?
-    var wordsTextFieldText : String?
-    var correctWords: [String]?
-    var wordsCounter: String?
-    var timerCount: String?
-    var mainButtonText: String?
-    var isShowingActivityIndicator: Bool?
 }

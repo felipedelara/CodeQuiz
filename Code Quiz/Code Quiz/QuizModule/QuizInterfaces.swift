@@ -21,7 +21,7 @@ protocol QuizViewInterface: ViewInterface {
     func showLoading()
     func hideLoading()
     func showVictory()
-    
+    func presentAlert(title: String, message: String, actionTitle: String, actionClosure: @escaping (() -> Void))
     func updateGame(toFitState state: GameState)
     func setTitle(text: String)
     func setTable(tableData: [String])

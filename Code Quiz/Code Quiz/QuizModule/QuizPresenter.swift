@@ -11,9 +11,8 @@
 import UIKit
 
 final class QuizPresenter {
-
     // MARK: - Private properties -
-
+    
     //VIPER
     private unowned let view: QuizViewInterface
     private let interactor: QuizInteractorInterface
@@ -41,11 +40,75 @@ final class QuizPresenter {
     private var timer = Timer()
     
     // MARK: - Lifecycle -
-
+    
     init(view: QuizViewInterface, interactor: QuizInteractorInterface, wireframe: QuizWireframeInterface) {
         self.view = view
         self.interactor = interactor
         self.wireframe = wireframe
+    }
+    
+    //MARK: - Alerts
+    
+    func alertNetworkFailure(){
+        let title = "Error",
+        message = "Could not retrieve data from server.",
+        actionTitle = "Try Again"
+        let actionClosure = {
+            print("Try Again Networking Pressed")
+            self.fetchData()
+        }
+        view.presentAlert(title: title, message: message, actionTitle: actionTitle, actionClosure: actionClosure)
+    }
+    
+    func alertVictory(){
+        let title = "Congratulations!",
+        message = "ood job! You found all the answers on time. Keep up with the great work.",
+        actionTitle = "Play Again"
+        let actionClosure = {
+            print("Play Again Pressed")
+            self.clearGameState()
+        }
+        view.presentAlert(title: title, message: message, actionTitle: actionTitle, actionClosure: actionClosure)
+    }
+
+    func alertDefeat(){
+        let title = "Time finished!",
+        message = "Sorry, time is up! You got \(self.correctAnswers.count) out of \(self.keywords.count) answers.",
+        actionTitle = "Play Again"
+        let actionClosure = {
+            print("Play Again Pressed")
+            self.clearGameState()
+        }
+        view.presentAlert(title: title, message: message, actionTitle: actionTitle, actionClosure: actionClosure)
+    }
+    
+    func fetchData(){
+        view.showLoading()
+        interactor.fetchCorrectKeywords(){ [weak self] success, keywords in
+            self?.view.hideLoading()
+            
+            guard let answers = keywords?.answer,
+                let question = keywords?.question else{
+                self?.alertNetworkFailure()
+                return
+            }
+            self?.keywords = answers
+            self?.view.setTitle(text: question)
+        }
+    }
+    
+    func startGame(){
+        self.gameState = .ongoing
+        precondition(self.correctAnswers.isEmpty)
+        self.startTimer()
+    }
+    
+    func clearGameState(){
+        self.timer.invalidate()
+        self.timeCounter = 300
+        self.correctAnswers.removeAll()
+        self.gameState = .initial
+        self.view.clearTextField()
     }
 }
 
@@ -55,63 +118,41 @@ extension QuizPresenter: QuizPresenterInterface {
     func notifyViewDidLoad() {
         print("Presenters is aware that view finished loaded")
         view.setupInitialView()
-
-        view.showLoading()
-        interactor.fetchCorrectKeywords(){ [weak self] success, keywords in
-            self?.view.hideLoading()
-            
-            guard let answers = keywords?.answer, let question = keywords?.question else{
-                //error
-                return
-            }
-            self?.keywords = answers
-            self?.view.setTitle(text: question)
-            //update interface
-        }
+        self.fetchData()
     }
     
-    func notifyViewDidAppear() {
-        print("Presenters is aware that view finished appearing")
-    }
+    func notifyViewDidAppear() {}
     
     func mainButtonPressed() {
         switch self.gameState {
         case .initial:
-            self.gameState = .ongoing
-            precondition(self.correctAnswers.isEmpty)
-            self.startTimer()
+            self.startGame()
         default:
-            //handle
-            self.timer.invalidate()
-            self.timeCounter = 300
-            self.correctAnswers.removeAll()
-            self.gameState = .initial
+           self.clearGameState()
         }
     }
     
     func keyworkdsTextViewDidChange(text: String) {
+        self.gameShouldBegin()
+        self.checkUserInput(text: text)
+    }
+    
+    func gameShouldBegin(){
         if self.gameState != .ongoing{
             self.gameState = .ongoing
             self.startTimer()
         }
-        
+    }
+    
+    func checkUserInput(text: String){
         for keyword in self.keywords{
             if text.uppercased() == keyword.uppercased(){
-                var keyworkAlreadyExists = false
-                
-                for answer in correctAnswers{
-                    if text == answer{
-                        keyworkAlreadyExists = true
-                    }
-                }
-                
-                if !keyworkAlreadyExists{
+                if !correctAnswers.contains(text){
                     handleGotKeywordRight(keyword)
                 }
             }
         }
     }
-    
     func handleGotKeywordRight(_ keyword: String) {
         self.correctAnswers.append(keyword.uppercased())
         view.setScore(score: "\(correctAnswers.count)/\(keywords.count)")
@@ -124,23 +165,28 @@ extension QuizPresenter: QuizPresenterInterface {
             view.showVictory()
             self.timer.invalidate()
             self.gameState = .victory
+            self.alertVictory()
         }
     }
     
     func keywordsFetchSuccess(keywords: Keywords) {
-        //TODO update viewmodel
         print("Presenters got keywords from interactor")
         view.hideLoading()
     }
     
     func keywordsFetchFailed(with errorMessage: String) {
-        //TODO update viewmodel
         print("Presenters failed getting keywords from interactor")
+        self.alertNetworkFailure()
     }
  
     //MARK: - Timer
+    
     func startTimer(){
-        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
+        self.timer = Timer.scheduledTimer(timeInterval: 1.0,
+                                          target: self,
+                                          selector: #selector(updateCounter),
+                                          userInfo: nil,
+                                          repeats: true)
     }
     
     @objc func updateCounter() {
@@ -151,6 +197,7 @@ extension QuizPresenter: QuizPresenterInterface {
             //Game over
             self.timer.invalidate()
             self.gameState = .defeat
+            self.alertDefeat()
         }
     }
 }

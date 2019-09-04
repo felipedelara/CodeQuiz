@@ -13,11 +13,11 @@ import UIKit
 final class QuizWireframe: BaseWireframe {
 
     // MARK: - Private properties -
-
+    
     private let storyboard = UIStoryboard(name: "Quiz", bundle: nil)
 
     // MARK: - Module setup -
-
+    
     init() {
         let moduleViewController = storyboard.instantiateViewController(ofType: QuizViewController.self)
         super.init(viewController: moduleViewController)
@@ -26,7 +26,6 @@ final class QuizWireframe: BaseWireframe {
         let presenter = QuizPresenter(view: moduleViewController, interactor: interactor, wireframe: self)
         moduleViewController.presenter = presenter
     }
-
 }
 
 // MARK: - Extensions -
