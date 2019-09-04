@@ -1,4 +1,4 @@
-# CodeQuiz
+# CodeQuiz VIPER
 
 Quiz iOS app written in Swift 5 using VIPER architecture.
 
