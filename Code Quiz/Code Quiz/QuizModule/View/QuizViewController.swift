@@ -27,7 +27,6 @@ final class QuizViewController: UIViewController {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     var lowerViewY : CGFloat? = nil
     var correctAnswers = [String]()
-    var buttonState = ButtonState.start
     var timeCounter = 300
     var timer = Timer()
     weak var keyboardWillShowObserver : NSObjectProtocol?
