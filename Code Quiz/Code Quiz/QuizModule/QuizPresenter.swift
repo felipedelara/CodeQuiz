@@ -31,7 +31,7 @@ final class QuizPresenter {
             self.view.updateGame(toFitState: newValue)
         }
     }
-    private var timeCounter = 3 {
+    private var timeCounter = 300 {
         willSet {
             let (_, min, sec) = TimeFormat.secondsToHoursMinutesSeconds(seconds: newValue)
             self.view.setCounter(time: "\(String(format: "%02d", min)):\(String(format: "%02d", sec))")

@@ -27,7 +27,7 @@ final class QuizViewController: UIViewController {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     var lowerViewY : CGFloat? = nil
     var correctAnswers = [String]()
-    var timeCounter = 300
+    var timeCounter = 3
     var timer = Timer()
     weak var keyboardWillShowObserver : NSObjectProtocol?
     weak var keyboardWillHideObserver : NSObjectProtocol?
@@ -59,7 +59,8 @@ final class QuizViewController: UIViewController {
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             print("Notification: Keyboard will show")
             //Adjust height so view is not hidden by keyboard
-            if UIDevice.current.orientation == UIDeviceOrientation.portrait {
+            if UIDevice.current.orientation != UIDeviceOrientation.landscapeLeft
+                && UIDevice.current.orientation != UIDeviceOrientation.landscapeRight{
                 lowerViewBottomConstraint.constant = keyboardHeight + 16
                 self.view.layoutIfNeeded()
             }
